@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search, Play, Pause, SkipBack, SkipForward, Music2 } from 'lucide-react';
 import { colors } from '../types';
-import ReactPlayer from 'react-player/youtube'; 
+import ReactPlayer from "react-player";
 
 interface Song {
   id: string;
