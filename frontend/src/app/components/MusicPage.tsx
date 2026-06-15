@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Search, Play, Pause, SkipBack, SkipForward, Music2 } from 'lucide-react';
 import { colors } from '../types';
+import ReactPlayer from 'react-player/youtube'; 
 
 interface Song {
   id: string;
@@ -8,15 +9,42 @@ interface Song {
   channel: string;
   duration: string;
   color: string;
+  url: string; 
 }
 
 const SONGS: Song[] = [
-  { id: '1', title: 'Lofi Hip Hop - Chill Study Beats', channel: 'ChillHop Music', duration: '3:24', color: '#6366F1' },
-  { id: '2', title: 'Jazz Cafe Morning Mix', channel: 'Cafe Jazz', duration: '4:12', color: '#F97316' },
-  { id: '3', title: 'Classical Piano for Focus', channel: 'Relaxing Piano', duration: '5:30', color: '#10B981' },
-  { id: '4', title: 'Rainy Day Ambient Sounds', channel: 'Nature Sounds', duration: '6:15', color: '#0EA5E9' },
-  { id: '5', title: 'Bossa Nova Study Session', channel: 'Bossa Cafe', duration: '3:48', color: '#EC4899' },
-  { id: '6', title: 'Deep Focus Alpha Waves', channel: 'Brain Waves', duration: '7:00', color: '#8B5CF6' },
+  { 
+    id: '1', 
+    title: 'Lofi Hip Hop - Chill Study Beats', 
+    channel: 'Lofi Girl', 
+    duration: 'LIVE', 
+    color: '#6366F1',
+    url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk' // Link asli Lofi Girl
+  },
+  { 
+    id: '2', 
+    title: 'Jazz Cafe Morning Mix', 
+    channel: 'Cafe Jazz', 
+    duration: '4:12', 
+    color: '#F97316',
+    url: 'https://www.youtube.com/watch?v=neV3EPgvZ3g'
+  },
+  { 
+    id: '3', 
+    title: 'Classical Piano for Focus', 
+    channel: 'Relaxing Piano', 
+    duration: '5:30', 
+    color: '#10B981',
+    url: 'https://www.youtube.com/watch?v=mIYzpCGsywk'
+  },
+  { 
+    id: '4', 
+    title: 'Rainy Day Ambient Sounds', 
+    channel: 'Nature Sounds', 
+    duration: '6:15', 
+    color: '#0EA5E9',
+    url: 'https://www.youtube.com/watch?v=mPZkdNFkNps'
+  },
 ];
 
 const PLAYLISTS = [
@@ -147,6 +175,17 @@ export function MusicPage({ isDark }: MusicPageProps) {
                 }}
               />
             </div>
+          </div>
+
+          {/* Pemutar Audio Tersembunyi */}
+          <div style={{ display: 'none' }}>
+            <ReactPlayer
+              url={currentSong?.url}
+              playing={isPlaying}
+              controls={false}
+              volume={0.5}
+              onEnded={handleNext}
+            />
           </div>
 
           {/* Song List */}
