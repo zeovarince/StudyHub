@@ -1,11 +1,21 @@
 const express = require('express');
 const router = express.Router();
-
-// Pastikan import menggunakan destructuring object { }
-const { getFriends, addFriend } = require('../controllers/friends-controller');
+const {
+    searchUsers,
+    sendFriendRequest,
+    getIncomingRequests,
+    respondFriendRequest,
+    getFriends,
+    removeFriend
+} = require('../controllers/friends-controller');
 const verifyToken = require('../middlewares/auth-middleware');
 
+// Urutan penting: statis (/search, /requests) harus sebelum dinamis (/:friendId)
+router.get('/search', verifyToken, searchUsers);
+router.get('/requests', verifyToken, getIncomingRequests);
 router.get('/', verifyToken, getFriends);
-router.post('/add', verifyToken, addFriend);
+router.post('/request', verifyToken, sendFriendRequest);
+router.put('/request/:id_pertemanan', verifyToken, respondFriendRequest);
+router.delete('/:friendId', verifyToken, removeFriend);
 
 module.exports = router;

@@ -30,6 +30,10 @@ CREATE TABLE friends (
     FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE,
     FOREIGN KEY (friend_id) REFERENCES users(id_user) ON DELETE CASCADE
 );
+ALTER TABLE friends
+  ADD COLUMN status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending',
+  ADD COLUMN requester_id INT NOT NULL DEFAULT 0,
+  ADD UNIQUE KEY unique_friendship (user_id, friend_id);
 
 CREATE TABLE task_members (
     id_member INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,7 +78,42 @@ CREATE TABLE playlist_songs (
 
 CREATE INDEX idx_playlist_user ON playlists(user_id);
 CREATE INDEX idx_playlist_song_playlist ON playlist_songs(playlist_id);
+-- Tabel grup studi
+CREATE TABLE study_groups (
+    id_group INT AUTO_INCREMENT PRIMARY KEY,
+    nama_group VARCHAR(100) NOT NULL,
+    deskripsi VARCHAR(255),
+    owner_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id_user) ON DELETE CASCADE
+);
 
+-- Tabel anggota grup (pivot)
+CREATE TABLE group_members (
+    id_member INT AUTO_INCREMENT PRIMARY KEY,
+    group_id INT NOT NULL,
+    user_id INT NOT NULL,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (group_id) REFERENCES study_groups(id_group) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE,
+    UNIQUE KEY unique_member (group_id, user_id)
+);
+
+-- Tabel pesan grup
+CREATE TABLE group_messages (
+    id_message INT AUTO_INCREMENT PRIMARY KEY,
+    group_id INT NOT NULL,
+    sender_id INT NOT NULL,
+    message TEXT,
+    file_url VARCHAR(500),
+    file_type ENUM('image', 'file') NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (group_id) REFERENCES study_groups(id_group) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_group_members ON group_members(group_id);
+CREATE INDEX idx_group_messages ON group_messages(group_id, created_at);
 DELIMITER //
 
 CREATE TRIGGER after_task_insert
