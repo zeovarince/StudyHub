@@ -1,66 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { KanbanBoard } from './components/KanbanBoard';
-import { MusicPage } from './components/MusicPage';
+import { MusicPage } from './components/Musicpage';
 import { FriendsPage } from './components/FriendsPage';
 import { TaskDetailModal } from './components/TaskDetailModal';
 import { AddTaskModal } from './components/AddTaskModal';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
 import { type Task, type Page } from './types';
-
-const INITIAL_TASKS: Task[] = [
-  {
-    id: '1',
-    title: 'Laporan Praktikum Fisika',
-    description: 'Membuat laporan hasil praktikum gelombang dan optik semester ini sesuai format yang ditentukan.',
-    deadline: '2026-06-20',
-    status: 'Belum',
-    members: ['AL', 'BI', 'CI'],
-  },
-  {
-    id: '2',
-    title: 'Presentasi Sejarah',
-    description: 'Menyiapkan slide presentasi tentang peristiwa proklamasi kemerdekaan Indonesia 1945.',
-    deadline: '2026-06-25',
-    status: 'Belum',
-    members: ['AL', 'DI'],
-  },
-  {
-    id: '3',
-    title: 'UAS Pemrograman Web',
-    description: 'Mengerjakan project akhir semester membuat website e-commerce dengan React dan Tailwind CSS.',
-    deadline: '2026-06-16',
-    status: 'Proses',
-    members: ['AL', 'BI', 'CI'],
-    file: 'brief-uas-pemweb.pdf',
-  },
-  {
-    id: '4',
-    title: 'Makalah Matematika',
-    description: 'Menyusun makalah tentang kalkulus integral dengan contoh soal beserta penyelesaiannya.',
-    deadline: '2026-06-18',
-    status: 'Proses',
-    members: ['AL', 'BI'],
-  },
-  {
-    id: '5',
-    title: 'Quiz Kimia Organik',
-    description: 'Mengerjakan quiz online bab senyawa hidrokarbon dan reaksi kimia dasar.',
-    deadline: '2026-06-10',
-    status: 'Selesai',
-    members: ['AL'],
-  },
-  {
-    id: '6',
-    title: 'Tugas Bahasa Inggris',
-    description: 'Menulis essay argumentatif tentang dampak media sosial terhadap kualitas pendidikan.',
-    deadline: '2026-06-12',
-    status: 'Selesai',
-    members: ['AL', 'BI'],
-  },
-];
 
 type AuthView = 'login' | 'register';
 
@@ -76,50 +25,132 @@ export default function App() {
   const [authView, setAuthView] = useState<AuthView>('login');
 
   const [activePage, setActivePage] = useState<Page>('Tugas');
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  // Data statis INITIAL_TASKS dihapus, diganti array kosong
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
 
+  // --- 1. AMBIL DATA DARI BACKEND ---
+  const fetchTasks = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get('http://localhost:5000/api/tasks', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const realTasks = response.data.data.map((t: any) => ({
+        id: t.id_task.toString(),
+        title: t.judul,
+        description: t.deskripsi || '',
+        deadline: t.due_date.split('T')[0], // Potong format YYYY-MM-DD
+        status: t.status,
+        members: ['ME'], 
+        file: t.file_lampiran
+      }));
+
+      setTasks(realTasks);
+    } catch (error) {
+      console.error('Gagal memuat tugas dari server:', error);
+    }
+  };
+
+  // Otomatis tarik data setelah berhasil login
+  useEffect(() => {
+    if (auth.isLoggedIn) {
+      fetchTasks();
+    }
+  }, [auth.isLoggedIn]);
+
+  // --- 2. AUTHENTICATION LOGIC ---
   const handleLogin = (email: string, name: string) => {
     setAuth({ isLoggedIn: true, userName: name, userEmail: email });
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token'); // Hapus token dari browser
     setAuth({ isLoggedIn: false, userName: '', userEmail: '' });
     setAuthView('login');
     setActivePage('Tugas');
     setSelectedTask(null);
     setShowAddModal(false);
+    setTasks([]); // Bersihkan board saat logout
   };
 
-  const moveTask = (id: string, direction: 'forward' | 'backward') => {
+  // --- 3. CRUD KANBAN KE DATABASE MYSQL ---
+  const moveTask = async (id: string, direction: 'forward' | 'backward') => {
     const order: Task['status'][] = ['Belum', 'Proses', 'Selesai'];
-    setTasks(prev =>
-      prev.map(t => {
-        if (t.id !== id) return t;
-        const idx = order.indexOf(t.status);
-        const newIdx = direction === 'forward' ? idx + 1 : idx - 1;
-        if (newIdx < 0 || newIdx >= order.length) return t;
-        return { ...t, status: order[newIdx] };
-      })
-    );
+    const taskToMove = tasks.find(t => t.id === id);
+    if (!taskToMove) return;
+
+    const idx = order.indexOf(taskToMove.status);
+    const newIdx = direction === 'forward' ? idx + 1 : idx - 1;
+    if (newIdx < 0 || newIdx >= order.length) return;
+
+    const newStatus = order[newIdx];
+
+    // Ubah UI seketika biar terkesan cepat
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:5000/api/tasks/${id}/status`, { status: newStatus }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) {
+      console.error('Gagal memindah tugas:', error);
+      fetchTasks(); // Kalau error, kembalikan ke posisi awal dari database
+    }
   };
 
-  const updateStatus = (id: string, status: Task['status']) => {
-    setTasks(prev => prev.map(t => (t.id === id ? { ...t, status } : t)));
+  const updateStatus = async (id: string, status: Task['status']) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:5000/api/tasks/${id}/status`, { status }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) {
+      console.error('Gagal update status:', error);
+      fetchTasks();
+    }
   };
 
-  const addTask = (data: Omit<Task, 'id'>) => {
-    setTasks(prev => [...prev, { ...data, id: Date.now().toString() }]);
-    setShowAddModal(false);
+  const addTask = async (data: Omit<Task, 'id'>) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/api/tasks', {
+        judul: data.title,
+        deskripsi: data.description,
+        mata_kuliah: 'Umum', 
+        due_date: data.deadline
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      fetchTasks(); // Tarik data baru dari DB setelah insert sukses
+      setShowAddModal(false);
+    } catch (error) {
+      console.error('Gagal menambah tugas:', error);
+    }
   };
 
-  const deleteTask = (id: string) => {
-    setTasks(prev => prev.filter(t => t.id !== id));
-    setSelectedTask(null);
+  const deleteTask = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5000/api/tasks/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setTasks(prev => prev.filter(t => t.id !== id));
+      setSelectedTask(null);
+    } catch (error) {
+      console.error('Gagal menghapus tugas:', error);
+    }
   };
 
-  // Auth screens
+  // --- RENDERING TAMPILAN ---
   if (!auth.isLoggedIn) {
     if (authView === 'register') {
       return (
@@ -141,7 +172,6 @@ export default function App() {
     );
   }
 
-  // Main app
   return (
     <div style={{ minHeight: '100vh', background: isDark ? '#09090B' : '#F8FAFC', fontFamily: 'Outfit, sans-serif' }}>
       <Navbar

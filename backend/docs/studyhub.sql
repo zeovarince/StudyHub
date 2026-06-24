@@ -41,6 +41,39 @@ CREATE TABLE task_members (
 );
 CREATE INDEX idx_task_status ON tasks(status);
 CREATE INDEX idx_task_due_date ON tasks(due_date);
+CREATE TABLE songs (
+    id_song INT AUTO_INCREMENT PRIMARY KEY,
+    youtube_id VARCHAR(20) NOT NULL UNIQUE,
+    judul VARCHAR(255) NOT NULL,
+    channel VARCHAR(150),
+    durasi VARCHAR(20),
+    thumbnail VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE playlists (
+    id_playlist INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    nama_playlist VARCHAR(100) NOT NULL,
+    deskripsi VARCHAR(255),
+    is_public BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+CREATE TABLE playlist_songs (
+    id_playlist_song INT AUTO_INCREMENT PRIMARY KEY,
+    playlist_id INT NOT NULL,
+    song_id INT NOT NULL,
+    urutan INT DEFAULT 0,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (playlist_id) REFERENCES playlists(id_playlist) ON DELETE CASCADE,
+    FOREIGN KEY (song_id) REFERENCES songs(id_song) ON DELETE CASCADE,
+    UNIQUE KEY unique_song_in_playlist (playlist_id, song_id)
+);
+
+CREATE INDEX idx_playlist_user ON playlists(user_id);
+CREATE INDEX idx_playlist_song_playlist ON playlist_songs(playlist_id);
 
 DELIMITER //
 
@@ -53,3 +86,10 @@ BEGIN
 END //
 
 DELIMITER ;
+
+INSERT INTO users (nama_lengkap, email, password) VALUES
+('Riel',  'riel@studyhub.com',  'password123'),
+('Zaki',  'zaki@studyhub.com',  'password123'),
+('Ijul',  'ijul@studyhub.com',  'password123'),
+('Idan',  'idan@studyhub.com',  'password123'),
+('Raffi', 'raffi@studyhub.com', 'password123');

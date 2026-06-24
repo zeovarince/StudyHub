@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Sun, Moon, Check } from 'lucide-react';
 import { colors } from '../types';
+import axios from 'axios';
 
 interface RegisterPageProps {
   isDark: boolean;
@@ -44,14 +45,29 @@ export function RegisterPage({ isDark, onToggleDark, onRegister, onGoLogin }: Re
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    
     setLoading(true);
-    setTimeout(() => {
+    try {
+      await axios.post('http://localhost:5000/api/auth/register', {
+        nama_lengkap: name,
+        email: email,
+        password: password
+      });
+      alert('Registrasi sukses! Silakan masuk dengan akun barumu.');
+      onGoLogin();
+      
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setErrors({ email: error.response.data.message });
+      } else {
+        setErrors({ email: 'Terjadi kesalahan saat mendaftar' });
+      }
+    } finally {
       setLoading(false);
-      onRegister(email, name.trim());
-    }, 800);
+    }
   };
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({

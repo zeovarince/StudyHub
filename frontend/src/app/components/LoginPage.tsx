@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Sun, Moon } from 'lucide-react';
 import { colors } from '../types';
+import axios from 'axios';
 
 interface LoginPageProps {
   isDark: boolean;
@@ -27,16 +28,31 @@ export function LoginPage({ isDark, onToggleDark, onLogin, onGoRegister }: Login
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email,
+        password
+      });
+
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+
+      onLogin(user.email, user.nama_lengkap);
+      
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setErrors({ email: error.response.data.message });
+      } else {
+        setErrors({ email: 'Terjadi kesalahan pada server' });
+      }
+    } finally {
       setLoading(false);
-      const name = email.split('@')[0];
-      const formatted = name.charAt(0).toUpperCase() + name.slice(1);
-      onLogin(email, formatted);
-    }, 800);
+    }
   };
 
   const inputWrap: React.CSSProperties = {
