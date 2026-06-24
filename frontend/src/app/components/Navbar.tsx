@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { LogOut, User } from 'lucide-react';
 import { type Page, colors } from '../types';
+import { StudyHubLogo } from './Logo';
 
 interface NavbarProps {
   isDark: boolean;
@@ -55,10 +56,13 @@ export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName,
       }}
     >
       {/* Logo */}
-      <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '22px', lineHeight: 1, userSelect: 'none' }}>
-        <span style={{ color: c.text }}>Study</span>
-        <span style={{ color: '#0EA5E9' }}>Hub</span>
-      </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <StudyHubLogo size={28} />
+        <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '22px', lineHeight: 1, userSelect: 'none' }}>
+          <span style={{ color: c.text }}>Study</span>
+          <span style={{ color: '#0EA5E9' }}>Hub</span>
+        </span>
+      </div>
 
       {/* Nav Links */}
       <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
