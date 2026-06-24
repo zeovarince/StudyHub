@@ -13,6 +13,7 @@ const friendsRoutes = require('./routes/friends-routes');
 const playlistRoutes = require('./routes/playlist-routes');
 const groupRoutes = require('./routes/group-routes');
 const verifyToken = require('./middlewares/auth-middleware');
+const profileRoutes = require('./routes/profile-routes');
 
 const app = express();
 // Bungkus express dengan http.createServer supaya Socket.io bisa nempel di server yang sama
@@ -43,6 +44,7 @@ app.use('/api/music', musicRoutes);
 app.use('/api/friends', friendsRoutes);
 app.use('/api/playlists', playlistRoutes);
 app.use('/api/groups', groupRoutes);
+app.use('/api/profile', profileRoutes);
 
 app.get('/', (req, res) => res.send('StudyHub API Running'));
 

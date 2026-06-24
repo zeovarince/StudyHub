@@ -239,27 +239,28 @@ export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName,
               {/* Menu Items */}
               <div style={{ padding: '6px' }}>
                 <button
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '9px 10px',
-                    background: 'none',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontFamily: 'Outfit, sans-serif',
-                    fontSize: '13px',
-                    color: c.muted,
-                    textAlign: 'left',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#27272A' : '#F8FAFC')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >
-                  <User size={15} />
-                  Profil Saya
-                </button>
+  onClick={() => { setMenuOpen(false); onNavigate('Profil'); }}
+  style={{
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '9px 10px',
+    background: 'none',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontFamily: 'Outfit, sans-serif',
+    fontSize: '13px',
+    color: c.muted,
+    textAlign: 'left',
+  }}
+  onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#27272A' : '#F8FAFC')}
+  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+>
+  <User size={15} />
+  Profil Saya
+</button>
 
                 <div style={{ height: '1px', background: c.navBorder, margin: '4px 0' }} />
 
