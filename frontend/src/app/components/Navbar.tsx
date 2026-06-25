@@ -11,11 +11,12 @@ interface NavbarProps {
   userName: string;
   userEmail: string;
   onLogout: () => void;
+  onEditProfile: () => void; // <--- Sudah kutambahkan tipe datanya di sini
 }
 
 const navLinks: Page[] = ['Dashboard', 'Tugas', 'Teman', 'Musik'];
 
-export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName, userEmail, onLogout }: NavbarProps) {
+export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName, userEmail, onLogout, onEditProfile }: NavbarProps) {
   const c = colors(isDark);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -238,7 +239,13 @@ export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName,
 
               {/* Menu Items */}
               <div style={{ padding: '6px' }}>
+                
+                {/* Tombol Profil Saya yang sudah disambungkan ke Edit Profil */}
                 <button
+                  onClick={() => {
+                    setMenuOpen(false); // Tutup dropdown
+                    onEditProfile();    // Munculkan Modal
+                  }}
                   style={{
                     width: '100%',
                     display: 'flex',

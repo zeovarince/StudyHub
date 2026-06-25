@@ -118,3 +118,46 @@ exports.login = async (req, res) => {
         });
     }
 };
+
+exports.updateProfile = async (req, res) => {
+    try {
+        const userId = req.user.id_user;
+        const { nama_lengkap, password } = req.body;
+        
+        let updateQuery = 'UPDATE users SET ';
+        const queryParams = [];
+
+        // Jika user mengubah nama
+        if (nama_lengkap) {
+            updateQuery += 'nama_lengkap = ?, ';
+            queryParams.push(nama_lengkap);
+        }
+
+        // Jika user mengubah password (kita enkripsi ulang)
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+            updateQuery += 'password = ?, ';
+            queryParams.push(hashedPassword);
+        }
+
+        // Jika user mengunggah foto baru lewat multer
+        if (req.file) {
+            updateQuery += 'foto_profil = ?, ';
+            queryParams.push(req.file.filename);
+        }
+
+        // Hapus koma & spasi terakhir, lalu tambahkan WHERE id
+        updateQuery = updateQuery.slice(0, -2);
+        updateQuery += ' WHERE id_user = ?';
+        queryParams.push(userId);
+
+        // Eksekusi ke database
+        await db.query(updateQuery, queryParams);
+        
+        res.status(200).json({ success: true, message: 'Profil berhasil diperbarui' });
+    } catch (error) {
+        console.error('Error saat update profil:', error);
+        res.status(500).json({ success: false, message: 'Gagal memperbarui profil' });
+    }
+};

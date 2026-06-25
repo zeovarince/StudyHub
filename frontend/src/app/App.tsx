@@ -9,6 +9,7 @@ import { TaskDetailModal } from './components/TaskDetailModal';
 import { AddTaskModal } from './components/AddTaskModal';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
+import { EditProfileModal } from './components/EditProfileModal';
 import { type Task, type Page } from './types';
 
 type AuthView = 'login' | 'register';
@@ -29,6 +30,7 @@ export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   // --- 1. AMBIL DATA DARI BACKEND ---
   const fetchTasks = async () => {
@@ -182,6 +184,7 @@ export default function App() {
         userName={auth.userName}
         userEmail={auth.userEmail}
         onLogout={handleLogout}
+        onEditProfile={() => setShowEditProfile(true)}
       />
 
       <main style={{ paddingTop: '56px', minHeight: '100vh' }}>
@@ -214,6 +217,16 @@ export default function App() {
           isDark={isDark}
           onClose={() => setShowAddModal(false)}
           onAdd={addTask}
+        />
+      )}
+      {showEditProfile && (
+        <EditProfileModal
+          isDark={isDark}
+          currentName={auth.userName}
+          currentEmail={auth.userEmail}
+          onClose={() => setShowEditProfile(false)}
+          // UBAH BARIS INI: Ambil data.name agar tidak error [object Object]
+          onSuccess={(data) => setAuth(prev => ({ ...prev, userName: data.name }))} 
         />
       )}
     </div>

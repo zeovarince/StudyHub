@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
 const authController = require('../controllers/auth-controller');
 const taskController = require('../controllers/task-controller');
 const authMiddleware = require('../middlewares/auth-middleware');
+const verifyToken = require('../middlewares/auth-middleware');
+const upload = require('../middlewares/upload-middleware');
 
 router.post('/register', authController.register);
 router.post('/login', authController.login);
@@ -15,5 +16,6 @@ router.delete('/tasks/:id', authMiddleware, taskController.deleteTask);
 router.post('/tasks/:id/members', authMiddleware, taskController.inviteMember);
 router.get('/tasks/:id/members', authMiddleware, taskController.getTaskMembers);
 router.delete('/tasks/:id/members/:userId', authMiddleware, taskController.removeMember);
+router.put('/profile', verifyToken, upload.single('foto_profil'), authController.updateProfile);
 
 module.exports = router;

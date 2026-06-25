@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { CalendarDays, CheckCircle2, Clock3, ListTodo, AlertCircle } from 'lucide-react';
 import { type Task, colors, getDaysUntil, formatDate, MEMBER_COLORS } from '../types';
 
@@ -39,6 +41,25 @@ const statCards = (tasks: Task[]) => [
 
 export function Dashboard({ tasks, isDark }: DashboardProps) {
   const c = colors(isDark);
+  
+  // --- STATE UNTUK TEMAN ---
+  const [friends, setFriends] = useState<any[]>([]);
+
+  // --- AMBIL DATA TEMAN DARI BACKEND ---
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/api/friends', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setFriends(response.data.data);
+      } catch (error) {
+        console.error('Gagal memuat teman di dashboard', error);
+      }
+    };
+    fetchFriends();
+  }, []);
 
   const upcoming = tasks
     .filter(t => t.status !== 'Selesai')
@@ -340,7 +361,7 @@ export function Dashboard({ tasks, isDark }: DashboardProps) {
         </div>
       </div>
 
-      {/* Recent Members */}
+      {/* RECENT MEMBERS (SEKARANG DINAMIS DARI DATABASE) */}
       <div
         style={{
           marginTop: '16px',
@@ -359,37 +380,49 @@ export function Dashboard({ tasks, isDark }: DashboardProps) {
             margin: '0 0 16px 0',
           }}
         >
-          Anggota Aktif
+          Anggota Aktif ({friends.length})
         </h3>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          {Object.entries(MEMBER_COLORS).map(([initials, color]) => (
-            <div key={initials} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  background: color,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#FFFFFF',
-                  fontFamily: 'Outfit, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '12px',
-                }}
-              >
-                {initials}
-              </div>
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 500, color: c.text }}>
-                  {initials === 'AL' ? 'Alicia' : initials === 'BI' ? 'Bintang' : initials === 'CI' ? 'Citra' : initials === 'DI' ? 'Dimas' : initials === 'EV' ? 'Eva' : initials === 'FA' ? 'Farhan' : 'Gita'}
+        
+        {friends.length === 0 ? (
+          <p style={{ color: c.muted, fontSize: '13px', margin: 0 }}>Belum ada teman terhubung.</p>
+        ) : (
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            {friends.map((friend) => {
+              // Ambil 2 huruf depan nama sebagai inisial
+              const initials = friend.nama_lengkap.substring(0, 2).toUpperCase();
+              // Ambil warna dari tipe data, kalau tidak ada kasih warna default biru
+              const color = MEMBER_COLORS[initials] || '#0EA5E9';
+              
+              return (
+                <div key={friend.id_user} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      background: color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#FFFFFF',
+                      fontFamily: 'Outfit, sans-serif',
+                      fontWeight: 600,
+                      fontSize: '12px',
+                    }}
+                  >
+                    {initials}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: 500, color: c.text }}>
+                      {friend.nama_lengkap}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#10B981' }}>Online</div>
+                  </div>
                 </div>
-                <div style={{ fontSize: '11px', color: '#10B981' }}>Online</div>
-              </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
