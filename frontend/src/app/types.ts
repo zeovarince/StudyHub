@@ -8,7 +8,7 @@ export interface Task {
   file?: string;
 }
 
-export type Page = 'Dashboard' | 'Tugas' | 'Teman' | 'Musik';
+export type Page = 'Dashboard' | 'Tugas' | 'Teman' | 'Musik' | 'Profil';
 
 export const MEMBER_COLORS: Record<string, string> = {
   AL: '#0EA5E9',

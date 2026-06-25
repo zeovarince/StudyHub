@@ -11,6 +11,7 @@ import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
 import { EditProfileModal } from './components/EditProfileModal';
 import { type Task, type Page } from './types';
+import { ProfilePage } from './components/ProfilePage';
 
 type AuthView = 'login' | 'register';
 
@@ -200,6 +201,7 @@ export default function App() {
         )}
         {activePage === 'Teman' && <FriendsPage isDark={isDark} />}
         {activePage === 'Musik' && <MusicPage isDark={isDark} />}
+        {activePage === 'Profil' && <ProfilePage isDark={isDark} />}
       </main>
 
       {selectedTask && (
