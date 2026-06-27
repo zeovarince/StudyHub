@@ -9,24 +9,28 @@ import { TaskDetailModal } from './components/TaskDetailModal';
 import { AddTaskModal } from './components/AddTaskModal';
 import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
+import { LandingPage } from './components/LandingPage';  // ← BARU
 import { EditProfileModal } from './components/EditProfileModal';
 import { type Task, type Page } from './types';
 import { ProfilePage } from './components/ProfilePage';
 import { ChatWidget } from './components/ChatWidget';
 
-type AuthView = 'login' | 'register';
+// Tambah 'landing' sebagai view pertama sebelum auth
+type AuthView = 'landing' | 'login' | 'register';
 
 interface AuthState {
   isLoggedIn: boolean;
   userName: string;
   userEmail: string;
-  userPhoto?: string; // Dipertahankan dari kode pertama
+  userPhoto?: string;
 }
 
 export default function App() {
   const [isDark, setIsDark] = useState(false);
   const [auth, setAuth] = useState<AuthState>({ isLoggedIn: false, userName: '', userEmail: '' });
-  const [authView, setAuthView] = useState<AuthView>('login');
+
+  // Default ke 'landing' — user melihat halaman index sebelum login
+  const [authView, setAuthView] = useState<AuthView>('landing');
 
   const [activePage, setActivePage] = useState<Page>('Tugas');
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -48,9 +52,9 @@ export default function App() {
         id: t.id_task.toString(),
         title: t.judul,
         description: t.deskripsi || '',
-        deadline: t.due_date.split('T')[0], // Potong format YYYY-MM-DD
+        deadline: t.due_date.split('T')[0],
         status: t.status,
-        members: ['ME'], 
+        members: ['ME'],
         file: t.file_lampiran
       }));
 
@@ -73,13 +77,13 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Hapus token dari browser
+    localStorage.removeItem('token');
     setAuth({ isLoggedIn: false, userName: '', userEmail: '' });
-    setAuthView('login');
+    setAuthView('landing');  // ← Kembali ke landing, bukan langsung login
     setActivePage('Tugas');
     setSelectedTask(null);
     setShowAddModal(false);
-    setTasks([]); // Bersihkan board saat logout
+    setTasks([]);
   };
 
   // --- 3. CRUD KANBAN KE DATABASE MYSQL ---
@@ -94,7 +98,6 @@ export default function App() {
 
     const newStatus = order[newIdx];
 
-    // Ubah UI seketika biar terkesan cepat
     setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
 
     try {
@@ -104,7 +107,7 @@ export default function App() {
       });
     } catch (error) {
       console.error('Gagal memindah tugas:', error);
-      fetchTasks(); // Kalau error, kembalikan ke posisi awal dari database
+      fetchTasks();
     }
   };
 
@@ -127,13 +130,13 @@ export default function App() {
       await axios.post('http://localhost:5000/api/tasks', {
         judul: data.title,
         deskripsi: data.description,
-        mata_kuliah: 'Umum', 
+        mata_kuliah: 'Umum',
         due_date: data.deadline
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
-      fetchTasks(); // Tarik data baru dari DB setelah insert sukses
+
+      fetchTasks();
       setShowAddModal(false);
     } catch (error) {
       console.error('Gagal menambah tugas:', error);
@@ -146,7 +149,7 @@ export default function App() {
       await axios.delete(`http://localhost:5000/api/tasks/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       setTasks(prev => prev.filter(t => t.id !== id));
       setSelectedTask(null);
     } catch (error) {
@@ -155,7 +158,20 @@ export default function App() {
   };
 
   // --- RENDERING TAMPILAN ---
+
+  // Belum login: tampilkan landing / login / register
   if (!auth.isLoggedIn) {
+    if (authView === 'landing') {
+      return (
+        <LandingPage
+          isDark={isDark}
+          onToggleDark={() => setIsDark(!isDark)}
+          onGoLogin={() => setAuthView('login')}
+          onGoRegister={() => setAuthView('register')}
+        />
+      );
+    }
+
     if (authView === 'register') {
       return (
         <RegisterPage
@@ -166,6 +182,8 @@ export default function App() {
         />
       );
     }
+
+    // default: 'login'
     return (
       <LoginPage
         isDark={isDark}
@@ -176,6 +194,7 @@ export default function App() {
     );
   }
 
+  // Sudah login: tampilkan app utama
   return (
     <div style={{ minHeight: '100vh', background: isDark ? '#09090B' : '#F8FAFC', fontFamily: 'Outfit, sans-serif' }}>
       <Navbar
@@ -185,7 +204,7 @@ export default function App() {
         onNavigate={setActivePage}
         userName={auth.userName}
         userEmail={auth.userEmail}
-        userPhoto={auth.userPhoto} // Dipertahankan dari kode pertama
+        userPhoto={auth.userPhoto}
         onLogout={handleLogout}
         onEditProfile={() => setShowEditProfile(true)}
       />
@@ -229,17 +248,16 @@ export default function App() {
           isDark={isDark}
           currentName={auth.userName}
           currentEmail={auth.userEmail}
-          currentPhoto={auth.userPhoto} // Dipertahankan dari kode pertama
+          currentPhoto={auth.userPhoto}
           onClose={() => setShowEditProfile(false)}
-          onSuccess={(data) => setAuth(prev => ({ 
-            ...prev, 
-            userName: data.name, 
-            userPhoto: data.photo ?? prev.userPhoto 
-          }))} 
+          onSuccess={(data) => setAuth(prev => ({
+            ...prev,
+            userName: data.name,
+            userPhoto: data.photo ?? prev.userPhoto
+          }))}
         />
       )}
 
-      {/* Komponen ChatWidget dari kode kedua dipasang di sini */}
       <ChatWidget isDark={isDark} />
     </div>
   );
