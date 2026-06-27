@@ -6,7 +6,7 @@ import axios from 'axios';
 interface LoginPageProps {
   isDark: boolean;
   onToggleDark: () => void;
-  onLogin: (email: string, name: string) => void;
+  onLogin: (email: string, name: string, photo?: string) => void;
   onGoRegister: () => void;
 }
 
@@ -42,7 +42,8 @@ const handleSubmit = async (e: React.FormEvent) => {
       const { token, user } = response.data;
       localStorage.setItem('token', token);
 
-      onLogin(user.email, user.nama_lengkap);
+      const photoUrl = user.foto_profil ? `http://localhost:5000/uploads/${user.foto_profil}` : undefined;
+      onLogin(user.email, user.nama_lengkap, photoUrl);
       
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {

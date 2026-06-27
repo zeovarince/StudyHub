@@ -10,13 +10,14 @@ interface NavbarProps {
   onNavigate: (page: Page) => void;
   userName: string;
   userEmail: string;
+  userPhoto?: string;
   onLogout: () => void;
   onEditProfile: () => void; // <--- Sudah kutambahkan tipe datanya di sini
 }
 
 const navLinks: Page[] = ['Dashboard', 'Tugas', 'Teman', 'Musik'];
 
-export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName, userEmail, onLogout, onEditProfile }: NavbarProps) {
+export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName, userEmail, userPhoto, onLogout, onEditProfile }: NavbarProps) {
   const c = colors(isDark);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -145,7 +146,7 @@ export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName,
               width: '32px',
               height: '32px',
               borderRadius: '50%',
-              background: '#0EA5E9',
+              background: userPhoto ? 'transparent' : '#0EA5E9',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -157,9 +158,19 @@ export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName,
               border: menuOpen ? '2px solid rgba(14,165,233,0.4)' : '2px solid transparent',
               cursor: 'pointer',
               transition: 'border 0.15s',
+              overflow: 'hidden',
+              padding: 0,
             }}
           >
-            {initials}
+            {userPhoto ? (
+              <img
+                src={userPhoto}
+                alt={userName}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+              />
+            ) : (
+              initials
+            )}
           </button>
 
           {/* Dropdown Menu */}
@@ -195,7 +206,7 @@ export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName,
                     width: '36px',
                     height: '36px',
                     borderRadius: '50%',
-                    background: '#0EA5E9',
+                    background: userPhoto ? 'transparent' : '#0EA5E9',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -204,9 +215,18 @@ export function Navbar({ isDark, onToggleDark, activePage, onNavigate, userName,
                     fontWeight: 600,
                     fontSize: '13px',
                     flexShrink: 0,
+                    overflow: 'hidden',
                   }}
                 >
-                  {initials}
+                  {userPhoto ? (
+                    <img
+                      src={userPhoto}
+                      alt={userName}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                    />
+                  ) : (
+                    initials
+                  )}
                 </div>
                 <div style={{ minWidth: 0 }}>
                   <div

@@ -105,7 +105,8 @@ exports.login = async (req, res) => {
             user: {
                 id_user: user.id_user,
                 nama_lengkap: user.nama_lengkap,
-                email: user.email
+                email: user.email,
+                foto_profil: user.foto_profil
             }
         });
 
@@ -154,8 +155,19 @@ exports.updateProfile = async (req, res) => {
 
         // Eksekusi ke database
         await db.query(updateQuery, queryParams);
-        
-        res.status(200).json({ success: true, message: 'Profil berhasil diperbarui' });
+
+        // Ambil ulang data terbaru user (termasuk foto_profil) untuk dikirim balik ke frontend
+        const [updatedUser] = await db.query(
+            'SELECT id_user, nama_lengkap, email, foto_profil FROM users WHERE id_user = ?',
+            [userId]
+        );
+
+        res.status(200).json({
+            success: true,
+            message: 'Profil berhasil diperbarui',
+            foto_profil: updatedUser[0]?.foto_profil || null,
+            nama_lengkap: updatedUser[0]?.nama_lengkap
+        });
     } catch (error) {
         console.error('Error saat update profil:', error);
         res.status(500).json({ success: false, message: 'Gagal memperbarui profil' });

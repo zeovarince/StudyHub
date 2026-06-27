@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { KanbanBoard } from './components/KanbanBoard';
-import { MusicPage } from './components/Musicpage';
+import { MusicPage } from './components/MusicPage';
 import { FriendsPage } from './components/FriendsPage';
 import { TaskDetailModal } from './components/TaskDetailModal';
 import { AddTaskModal } from './components/AddTaskModal';
@@ -12,6 +12,7 @@ import { RegisterPage } from './components/RegisterPage';
 import { EditProfileModal } from './components/EditProfileModal';
 import { type Task, type Page } from './types';
 import { ProfilePage } from './components/ProfilePage';
+import { ChatWidget } from './components/ChatWidget';
 
 type AuthView = 'login' | 'register';
 
@@ -19,6 +20,7 @@ interface AuthState {
   isLoggedIn: boolean;
   userName: string;
   userEmail: string;
+  userPhoto?: string; // Dipertahankan dari kode pertama
 }
 
 export default function App() {
@@ -27,7 +29,6 @@ export default function App() {
   const [authView, setAuthView] = useState<AuthView>('login');
 
   const [activePage, setActivePage] = useState<Page>('Tugas');
-  // Data statis INITIAL_TASKS dihapus, diganti array kosong
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -67,8 +68,8 @@ export default function App() {
   }, [auth.isLoggedIn]);
 
   // --- 2. AUTHENTICATION LOGIC ---
-  const handleLogin = (email: string, name: string) => {
-    setAuth({ isLoggedIn: true, userName: name, userEmail: email });
+  const handleLogin = (email: string, name: string, photo?: string) => {
+    setAuth({ isLoggedIn: true, userName: name, userEmail: email, userPhoto: photo });
   };
 
   const handleLogout = () => {
@@ -184,6 +185,7 @@ export default function App() {
         onNavigate={setActivePage}
         userName={auth.userName}
         userEmail={auth.userEmail}
+        userPhoto={auth.userPhoto} // Dipertahankan dari kode pertama
         onLogout={handleLogout}
         onEditProfile={() => setShowEditProfile(true)}
       />
@@ -221,16 +223,24 @@ export default function App() {
           onAdd={addTask}
         />
       )}
+
       {showEditProfile && (
         <EditProfileModal
           isDark={isDark}
           currentName={auth.userName}
           currentEmail={auth.userEmail}
+          currentPhoto={auth.userPhoto} // Dipertahankan dari kode pertama
           onClose={() => setShowEditProfile(false)}
-          // UBAH BARIS INI: Ambil data.name agar tidak error [object Object]
-          onSuccess={(data) => setAuth(prev => ({ ...prev, userName: data.name }))} 
+          onSuccess={(data) => setAuth(prev => ({ 
+            ...prev, 
+            userName: data.name, 
+            userPhoto: data.photo ?? prev.userPhoto 
+          }))} 
         />
       )}
+
+      {/* Komponen ChatWidget dari kode kedua dipasang di sini */}
+      <ChatWidget isDark={isDark} />
     </div>
   );
 }

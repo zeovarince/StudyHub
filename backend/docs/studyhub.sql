@@ -113,6 +113,15 @@ CREATE TABLE group_messages (
     FOREIGN KEY (sender_id) REFERENCES users(id_user) ON DELETE CASCADE
 );
 
+CREATE TABLE chat_history (
+    id_chat INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    role ENUM('user', 'assistant') NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
 CREATE INDEX idx_group_members ON group_members(group_id);
 CREATE INDEX idx_group_messages ON group_messages(group_id, created_at);
 DELIMITER //

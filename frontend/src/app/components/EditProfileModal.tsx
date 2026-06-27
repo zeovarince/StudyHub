@@ -21,13 +21,14 @@ interface EditProfileModalProps {
   isDark: boolean;
   currentName: string;
   currentEmail?: string; // Opsional jika ingin ditampilkan
+  currentPhoto?: string; // Foto profil yang sudah tersimpan sebelumnya
   onClose: () => void;
   onSuccess: (data: { name: string; photo?: string }) => void;
 }
 
-export function EditProfileModal({ currentName, currentEmail = "", onClose, onSuccess }: EditProfileModalProps) {
+export function EditProfileModal({ currentName, currentEmail = "", currentPhoto, onClose, onSuccess }: EditProfileModalProps) {
   const [activeTab, setActiveTab] = useState<Tab>("profil");
-  const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(currentPhoto ?? null);
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -106,9 +107,10 @@ export function EditProfileModal({ currentName, currentEmail = "", onClose, onSu
       });
 
       toast.success("Profil berhasil diperbarui!");
+      const fotoProfil = res.data?.foto_profil;
       onSuccess({
         name: profile.namaLengkap,
-        photo: res.data?.foto_profil || avatarSrc
+        photo: fotoProfil ? `http://localhost:5000/uploads/${fotoProfil}` : avatarSrc || undefined
       });
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Gagal memperbarui profil");
