@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CalendarDays, CheckCircle2, Clock3, ListTodo, AlertCircle } from 'lucide-react';
 import { type Task, colors, getDaysUntil, formatDate, MEMBER_COLORS } from '../types';
+import { API_URL, SOCKET_URL } from '../config';
 
 interface DashboardProps {
   tasks: Task[];
@@ -50,7 +51,7 @@ export function Dashboard({ tasks, isDark }: DashboardProps) {
     const fetchFriends = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/friends', {
+        const response = await axios.get(`${API_URL}/api/friends`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFriends(response.data.data);

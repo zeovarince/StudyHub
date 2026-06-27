@@ -44,8 +44,8 @@ export default function App() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:5000/api/tasks', {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/tasks`, {
+          headers: { Authorization: `Bearer ${token}` }
       });
 
       const realTasks = response.data.data.map((t: any) => ({

@@ -3,6 +3,7 @@ import axios from "axios";
 import { Camera, Eye, EyeOff, Check, X, User, Lock, Bell, ArrowLeft } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import { StudyHubLogo } from "./logo"; // Memanggil logo yang kita buat
+import { API_URL, SOCKET_URL } from '../config';
 
 type Tab = "profil" | "keamanan" | "notifikasi";
 
@@ -102,7 +103,7 @@ export function EditProfileModal({ currentName, currentEmail = "", currentPhoto,
         formData.append("foto_profil", file);
       }
 
-      const res = await axios.put("http://localhost:5000/api/auth/profile", formData, {
+      const res = await axios.put(`${API_URL}/api/auth/profile`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -110,7 +111,7 @@ export function EditProfileModal({ currentName, currentEmail = "", currentPhoto,
       const fotoProfil = res.data?.foto_profil;
       onSuccess({
         name: profile.namaLengkap,
-        photo: fotoProfil ? `http://localhost:5000/uploads/${fotoProfil}` : avatarSrc || undefined
+        photo: fotoProfil ? `${API_URL}/uploads/${fotoProfil}` : avatarSrc || undefined
       });
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Gagal memperbarui profil");
@@ -140,7 +141,7 @@ export function EditProfileModal({ currentName, currentEmail = "", currentPhoto,
       const formData = new FormData();
       formData.append("password", passwords.passwordBaru);
 
-      await axios.put("http://localhost:5000/api/auth/profile", formData, {
+      await axios.put(`${API_URL}/api/auth/profile`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

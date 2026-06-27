@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Bot, X, Send, Sparkles, Loader2, Trash2 } from 'lucide-react';
 import { colors } from '../types';
+import { API_URL, SOCKET_URL } from '../config';
 
 // ============================================================
 // INTERFACES
@@ -60,7 +61,7 @@ export function ChatWidget({ isDark }: ChatWidgetProps) {
   const fetchHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/chat/history', getAuthHeader());
+      const res = await axios.get(`${API_URL}/api/chat/history`, getAuthHeader());
       setMessages(
         res.data.data.map((m: any) => ({
           id_chat: m.id_chat,
@@ -87,7 +88,7 @@ export function ChatWidget({ isDark }: ChatWidgetProps) {
     setIsSending(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/chat', { message: text }, getAuthHeader());
+      const res = await axios.post(`${API_URL}/api/chat`, { message: text }, getAuthHeader());
       setMessages(prev => [...prev, { role: 'assistant', message: res.data.reply }]);
     } catch (error: any) {
       const errMsg = error?.response?.data?.message || 'Maaf, StudyBot sedang gangguan. Coba lagi sebentar ya.';
@@ -99,7 +100,7 @@ export function ChatWidget({ isDark }: ChatWidgetProps) {
 
   const handleClearHistory = async () => {
     try {
-      await axios.delete('http://localhost:5000/api/chat/history', getAuthHeader());
+      await axios.delete(`${API_URL}/api/chat/history`, getAuthHeader());
       setMessages([]);
     } catch (error) {
       console.error('Gagal menghapus riwayat chat:', error);

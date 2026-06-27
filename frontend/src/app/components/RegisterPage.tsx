@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Eye, EyeOff, Sun, Moon, Check } from 'lucide-react';
 import { colors } from '../types';
 import axios from 'axios';
+import { API_URL, SOCKET_URL } from '../config';
 
 interface RegisterPageProps {
   isDark: boolean;
@@ -51,7 +52,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     
     setLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/auth/register', {
+      await axios.post(`${API_URL}/api/auth/register`, {
         nama_lengkap: name,
         email: email,
         password: password

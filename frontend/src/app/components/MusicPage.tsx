@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { colors } from '../types';
 import ReactPlayer from "react-player";
+import { API_URL, SOCKET_URL } from '../config';
 
 // ============================================================
 // INTERFACES
@@ -121,7 +122,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
   const fetchMusic = async (query: string = 'lofi study music') => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/music/search?q=${query}`);
+      const response = await axios.get(`${API_URL}/api/music/search?q=${query}`);
       const fetchedSongs = response.data.data.map((vid: any, index: number) => ({
         id: vid.id,
         title: vid.title,
@@ -265,7 +266,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
   // ============================================================
   const fetchMyPlaylists = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/playlists', getAuthHeader());
+      const response = await axios.get(`${API_URL}/api/playlists`, getAuthHeader());
       setMyPlaylists(response.data.data);
     } catch (error) {
       console.error('Gagal memuat playlist:', error);
@@ -276,7 +277,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
     if (!newPlaylistName.trim()) return;
     try {
       await axios.post(
-        'http://localhost:5000/api/playlists',
+        `${API_URL}/api/playlists`,
         { nama_playlist: newPlaylistName, deskripsi: newPlaylistDesc, is_public: true },
         getAuthHeader()
       );
@@ -297,7 +298,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
     setPlaylistQueue([]);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/playlists/${playlist.id_playlist}/songs`,
+        `${API_URL}/api/playlists/${playlist.id_playlist}/songs`,
         getAuthHeader()
       );
       const formatted = response.data.data.map((s: any, index: number) => ({
@@ -317,7 +318,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
   const handleDeletePlaylist = async (playlistId: number) => {
     if (!window.confirm('Hapus playlist ini?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/playlists/${playlistId}`, getAuthHeader());
+      await axios.delete(`${API_URL}/api/playlists/${playlistId}`, getAuthHeader());
       if (activePlaylist?.id_playlist === playlistId) {
         setActivePlaylist(null);
         setPlaylistSongs([]);
@@ -332,7 +333,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
   const handleAddSongToPlaylist = async (playlistId: number, song: Song) => {
     try {
       await axios.post(
-        `http://localhost:5000/api/playlists/${playlistId}/songs`,
+        `${API_URL}/api/playlists/${playlistId}/songs`,
         { youtube_id: song.id, judul: song.title, channel: song.channel, durasi: song.duration, thumbnail: '' },
         getAuthHeader()
       );
@@ -348,13 +349,13 @@ export function MusicPage({ isDark }: MusicPageProps) {
     if (!activePlaylist) return;
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/playlists/${activePlaylist.id_playlist}/songs`,
+        `${API_URL}/api/playlists/${activePlaylist.id_playlist}/songs`,
         getAuthHeader()
       );
       const found = response.data.data.find((s: any) => s.youtube_id === songId);
       if (!found) return;
       await axios.delete(
-        `http://localhost:5000/api/playlists/${activePlaylist.id_playlist}/songs/${found.id_song}`,
+        `${API_URL}/api/playlists/${activePlaylist.id_playlist}/songs/${found.id_song}`,
         getAuthHeader()
       );
       handleOpenPlaylist(activePlaylist);
@@ -369,7 +370,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
     if (!playlistSearch.trim()) return;
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/playlists/search?q=${playlistSearch}`,
+        `${API_URL}/api/playlists/search?q=${playlistSearch}`,
         getAuthHeader()
       );
       setSearchedPlaylists(response.data.data);

@@ -6,6 +6,7 @@ import {
   Plus, Send, MessageCircle, LogOut, UserMinus
 } from 'lucide-react';
 import { colors } from '../types';
+import { API_URL, SOCKET_URL } from '../config';
 
 // ============================================================
 // INTERFACES
@@ -168,7 +169,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
     if (!showGroupChat || !activeGroup) return;
 
     const token = localStorage.getItem('token');
-    const socket = io('http://localhost:5000', { auth: { token } });
+    const socket = io(`${API_URL}`, { auth: { token } });
     socketRef.current = socket;
 
     socket.on('connect', () => {
@@ -197,14 +198,14 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
   // ============================================================
   const fetchFriends = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/friends', getAuthHeader());
+      const res = await axios.get(`${API_URL}/api/friends`, getAuthHeader());
       setFriends(res.data.data);
     } catch {}
   };
 
   const fetchRequests = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/friends/requests', getAuthHeader());
+      const res = await axios.get(`${API_URL}/api/friends/requests`, getAuthHeader());
       setRequests(res.data.data);
     } catch {}
   };
@@ -214,7 +215,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
     setIsSearching(true);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/friends/search?q=${searchQuery}`,
+        `${API_URL}/api/friends/search?q=${searchQuery}`,
         getAuthHeader()
       );
       setSearchResults(res.data.data);
@@ -228,7 +229,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
   const handleSendRequest = async (friendId: number) => {
     try {
       await axios.post(
-        'http://localhost:5000/api/friends/request',
+        `${API_URL}/api/friends/request`,
         { friend_id: friendId },
         getAuthHeader()
       );
@@ -247,7 +248,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
   const handleRespondRequest = async (idPertemanan: number, action: 'accept' | 'reject') => {
     try {
       await axios.put(
-        `http://localhost:5000/api/friends/request/${idPertemanan}`,
+        `${API_URL}/api/friends/request/${idPertemanan}`,
         { action },
         getAuthHeader()
       );
@@ -262,7 +263,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
   const handleRemoveFriend = async (friendId: number, name: string) => {
     if (!window.confirm(`Hapus ${name} dari daftar teman?`)) return;
     try {
-      await axios.delete(`http://localhost:5000/api/friends/${friendId}`, getAuthHeader());
+      await axios.delete(`${API_URL}/api/friends/${friendId}`, getAuthHeader());
       showToast(`${name} dihapus dari daftar teman`, 'error');
       fetchFriends();
     } catch {
@@ -275,7 +276,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
   // ============================================================
   const fetchGroups = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/groups', getAuthHeader());
+      const res = await axios.get(`${API_URL}/api/groups`, getAuthHeader());
       setGroups(res.data.data);
     } catch {}
   };
@@ -284,7 +285,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
     if (!newGroupName.trim()) return;
     try {
       await axios.post(
-        'http://localhost:5000/api/groups',
+        `${API_URL}/api/groups`,
         { nama_group: newGroupName, deskripsi: newGroupDesc },
         getAuthHeader()
       );
@@ -301,7 +302,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
   const handleDeleteGroup = async (groupId: number) => {
     if (!window.confirm('Hapus grup ini?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/groups/${groupId}`, getAuthHeader());
+      await axios.delete(`${API_URL}/api/groups/${groupId}`, getAuthHeader());
       showToast('Grup dihapus', 'error');
       fetchGroups();
     } catch (error: any) {
@@ -314,8 +315,8 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
     setShowGroupChat(true);
     try {
       const [detailRes, msgRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/groups/${group.id_group}`, getAuthHeader()),
-        axios.get(`http://localhost:5000/api/groups/${group.id_group}/messages`, getAuthHeader()),
+        axios.get(`${API_URL}/api/groups/${group.id_group}`, getAuthHeader()),
+        axios.get(`${API_URL}/api/groups/${group.id_group}/messages`, getAuthHeader()),
       ]);
       setGroupMembers(detailRes.data.data.anggota);
       setMessages(msgRes.data.data);
@@ -328,7 +329,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
     if (!activeGroup) return;
     try {
       await axios.post(
-        `http://localhost:5000/api/groups/${activeGroup.id_group}/members`,
+        `${API_URL}/api/groups/${activeGroup.id_group}/members`,
         { friend_id: friendId },
         getAuthHeader()
       );
@@ -344,7 +345,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
     if (!activeGroup || !window.confirm('Keluar dari grup ini?')) return;
     try {
       await axios.delete(
-        `http://localhost:5000/api/groups/${activeGroup.id_group}/members/leave`,
+        `${API_URL}/api/groups/${activeGroup.id_group}/members/leave`,
         getAuthHeader()
       );
       showToast('Berhasil keluar dari grup', 'error');
@@ -360,7 +361,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
     if (!activeGroup || !window.confirm(`Keluarkan ${memberName} dari grup?`)) return;
     try {
       await axios.delete(
-        `http://localhost:5000/api/groups/${activeGroup.id_group}/members/${memberId}`,
+        `${API_URL}/api/groups/${activeGroup.id_group}/members/${memberId}`,
         getAuthHeader()
       );
       showToast(`${memberName} dikeluarkan dari grup`, 'error');

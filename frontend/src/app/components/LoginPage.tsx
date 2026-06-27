@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Eye, EyeOff, Sun, Moon } from 'lucide-react';
 import { colors } from '../types';
 import axios from 'axios';
+import { API_URL, SOCKET_URL } from '../config';
 
 interface LoginPageProps {
   isDark: boolean;
@@ -34,7 +35,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         email,
         password
       });
@@ -42,7 +43,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       const { token, user } = response.data;
       localStorage.setItem('token', token);
 
-      const photoUrl = user.foto_profil ? `http://localhost:5000/uploads/${user.foto_profil}` : undefined;
+      const photoUrl = user.foto_profil ? `${API_URL}/uploads/${user.foto_profil}` : undefined;
       onLogin(user.email, user.nama_lengkap, photoUrl);
       
     } catch (error) {
