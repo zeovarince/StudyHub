@@ -1,17 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const {
-    sendChatMessage,
-    getChatHistory,
-    clearChatHistory
-} = require('../controllers/chat-controller');
-const verifyToken = require('../middlewares/auth-middleware');
+const chatController = require('../controllers/chat-controller');
 
-// Semua endpoint chat wajib login
-router.use(verifyToken);
-
-router.get('/history', getChatHistory);
-router.delete('/history', clearChatHistory);
-router.post('/', sendChatMessage);
+// Rute utama untuk menerima pesan dari frontend
+router.post('/', chatController.sendMessage);
 
 module.exports = router;
