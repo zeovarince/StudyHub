@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { X, Upload } from 'lucide-react';
-import { type Task, colors } from '../types';
+import { useState } from "react";
+import { X, Upload } from "lucide-react";
+import { type Task, colors } from "../types";
 
 interface AddTaskModalProps {
   isDark: boolean;
   onClose: () => void;
-  onAdd: (task: Omit<Task, 'id'>) => void;
+  onAdd: (task: Omit<Task, "id">) => void;
 }
 
 export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
   const c = colors(isDark);
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [deadline, setDeadline] = useState('');
-  const [status, setStatus] = useState<Task['status']>('Belum');
-  const [fileName, setFileName] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [status, setStatus] = useState<Task["status"]>("Belum");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!title.trim()) e.title = 'Judul tugas wajib diisi';
-    if (!deadline) e.deadline = 'Deadline wajib diisi';
+    if (!title.trim()) e.title = "Judul tugas wajib diisi";
+    if (!deadline) e.deadline = "Deadline wajib diisi";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -34,67 +34,74 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
       description: description.trim(),
       deadline,
       status,
-      members: ['AL'],
-      file: fileName || undefined,
+      members: ["AL"],
+      file: selectedFile as any,
     });
   };
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
-    width: '100%',
-    fontFamily: 'Outfit, sans-serif',
+    width: "100%",
+    fontFamily: "Outfit, sans-serif",
     fontWeight: 400,
-    fontSize: '14px',
+    fontSize: "14px",
     color: c.text,
     background: c.inputBg,
-    border: `1px solid ${hasError ? '#EF4444' : c.inputBorder}`,
-    borderRadius: '8px',
-    padding: '9px 12px',
-    outline: 'none',
-    boxSizing: 'border-box',
+    border: `1px solid ${hasError ? "#EF4444" : c.inputBorder}`,
+    borderRadius: "8px",
+    padding: "9px 12px",
+    outline: "none",
+    boxSizing: "border-box",
   });
 
   const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontFamily: 'Outfit, sans-serif',
+    display: "block",
+    fontFamily: "Outfit, sans-serif",
     fontWeight: 400,
-    fontSize: '14px',
+    fontSize: "14px",
     color: c.muted,
-    marginBottom: '6px',
+    marginBottom: "6px",
   };
 
   return (
     <div
       onClick={onClose}
       style={{
-        position: 'fixed',
+        position: "fixed",
         inset: 0,
-        background: 'rgba(0,0,0,0.4)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        background: "rgba(0,0,0,0.4)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         zIndex: 2000,
-        padding: '24px',
+        padding: "24px",
       }}
     >
       <div
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         style={{
-          width: '400px',
+          width: "min(400px, calc(100vw - 32px))",
           background: c.card,
-          borderRadius: '16px',
-          padding: '20px',
-          fontFamily: 'Outfit, sans-serif',
-          maxHeight: '90vh',
-          overflowY: 'auto',
+          borderRadius: "16px",
+          padding: "20px",
+          fontFamily: "Outfit, sans-serif",
+          maxHeight: "90vh",
+          overflowY: "auto",
         }}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "20px",
+          }}
+        >
           <h2
             style={{
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: "Syne, sans-serif",
               fontWeight: 700,
-              fontSize: '18px',
+              fontSize: "18px",
               color: c.text,
               margin: 0,
             }}
@@ -104,13 +111,13 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
           <button
             onClick={onClose}
             style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
+              background: "none",
+              border: "none",
+              cursor: "pointer",
               color: c.muted,
-              padding: '4px',
-              display: 'flex',
-              alignItems: 'center',
+              padding: "4px",
+              display: "flex",
+              alignItems: "center",
             }}
           >
             <X size={18} />
@@ -118,7 +125,7 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
         </div>
 
         {/* Form */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           {/* Judul Tugas */}
           <div>
             <label style={labelStyle}>Judul Tugas</label>
@@ -126,11 +133,18 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
               type="text"
               placeholder="Contoh: UAS Pemrograman Web"
               value={title}
-              onChange={e => setTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               style={inputStyle(!!errors.title)}
             />
             {errors.title && (
-              <span style={{ fontSize: '12px', color: '#EF4444', marginTop: '4px', display: 'block' }}>
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "#EF4444",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
                 {errors.title}
               </span>
             )}
@@ -142,12 +156,12 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
             <textarea
               placeholder="Deskripsikan tugasmu..."
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               rows={3}
               style={{
                 ...inputStyle(),
-                resize: 'vertical',
-                fontFamily: 'Outfit, sans-serif',
+                resize: "vertical",
+                fontFamily: "Outfit, sans-serif",
               }}
             />
           </div>
@@ -158,14 +172,21 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
             <input
               type="date"
               value={deadline}
-              onChange={e => setDeadline(e.target.value)}
+              onChange={(e) => setDeadline(e.target.value)}
               style={{
                 ...inputStyle(!!errors.deadline),
-                colorScheme: isDark ? 'dark' : 'light',
+                colorScheme: isDark ? "dark" : "light",
               }}
             />
             {errors.deadline && (
-              <span style={{ fontSize: '12px', color: '#EF4444', marginTop: '4px', display: 'block' }}>
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "#EF4444",
+                  marginTop: "4px",
+                  display: "block",
+                }}
+              >
                 {errors.deadline}
               </span>
             )}
@@ -176,11 +197,11 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
             <label style={labelStyle}>Status</label>
             <select
               value={status}
-              onChange={e => setStatus(e.target.value as Task['status'])}
+              onChange={(e) => setStatus(e.target.value as Task["status"])}
               style={{
                 ...inputStyle(),
-                cursor: 'pointer',
-                appearance: 'auto',
+                cursor: "pointer",
+                appearance: "auto",
               }}
             >
               <option value="Belum">Belum</option>
@@ -193,43 +214,60 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
           <div>
             <label style={labelStyle}>Upload File (opsional)</label>
             <div
-              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
               onDragLeave={() => setDragOver(false)}
-              onDrop={e => {
+              onDrop={(e) => {
                 e.preventDefault();
                 setDragOver(false);
                 const file = e.dataTransfer.files[0];
-                if (file) setFileName(file.name);
+                if (file) setSelectedFile(file);
               }}
               onClick={() => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.pdf,image/*';
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = ".pdf,image/*";
                 input.onchange = (e) => {
                   const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file) setFileName(file.name);
+                  if (file) setSelectedFile(file);
                 };
                 input.click();
               }}
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                border: `1px dashed ${dragOver ? '#0EA5E9' : c.inputBorder}`,
-                borderRadius: '8px',
-                padding: '20px',
-                cursor: 'pointer',
-                background: dragOver ? 'rgba(14,165,233,0.04)' : c.inputBg,
-                transition: 'all 0.15s',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                border: `1px dashed ${dragOver ? "#0EA5E9" : c.inputBorder}`,
+                borderRadius: "8px",
+                padding: "20px",
+                cursor: "pointer",
+                background: dragOver ? "rgba(14,165,233,0.04)" : c.inputBg,
+                transition: "all 0.15s",
               }}
             >
-              <Upload size={20} color={dragOver ? '#0EA5E9' : '#64748B'} />
-              {fileName ? (
-                <span style={{ fontSize: '13px', color: '#0EA5E9', fontWeight: 500 }}>{fileName}</span>
+              <Upload size={20} color={dragOver ? "#0EA5E9" : "#64748B"} />
+              {selectedFile ? (
+                <span
+                  style={{
+                    fontSize: "13px",
+                    color: "#0EA5E9",
+                    fontWeight: 500,
+                  }}
+                >
+                  {selectedFile.name}
+                </span>
               ) : (
-                <span style={{ fontSize: '13px', color: c.muted, textAlign: 'center' }}>
+                <span
+                  style={{
+                    fontSize: "13px",
+                    color: c.muted,
+                    textAlign: "center",
+                  }}
+                >
                   Klik atau drag file PDF/gambar
                 </span>
               )}
@@ -241,17 +279,17 @@ export function AddTaskModal({ isDark, onClose, onAdd }: AddTaskModalProps) {
         <button
           onClick={handleSubmit}
           style={{
-            width: '100%',
-            fontFamily: 'Outfit, sans-serif',
+            width: "100%",
+            fontFamily: "Outfit, sans-serif",
             fontWeight: 600,
-            fontSize: '14px',
-            color: '#FFFFFF',
-            background: '#0EA5E9',
-            border: 'none',
-            borderRadius: '8px',
-            height: '40px',
-            cursor: 'pointer',
-            marginTop: '20px',
+            fontSize: "14px",
+            color: "#FFFFFF",
+            background: "#0EA5E9",
+            border: "none",
+            borderRadius: "8px",
+            height: "40px",
+            cursor: "pointer",
+            marginTop: "20px",
           }}
         >
           Buat Tugas

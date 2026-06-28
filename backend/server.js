@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
@@ -50,7 +51,7 @@ app.use((req, res, next) => {
     req.io = io;
     next();
 });
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/music', musicRoutes);

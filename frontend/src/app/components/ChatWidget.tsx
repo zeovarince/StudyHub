@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Bot, X, Send, Sparkles, Loader2, Trash2 } from 'lucide-react';
 import { colors } from '../types';
 import { API_URL, SOCKET_URL } from '../config';
+import { useIsMobile } from './ui/use-mobile';
 
 // ============================================================
 // INTERFACES
@@ -37,6 +38,7 @@ const SUGGESTIONS = [
 // ============================================================
 export function ChatWidget({ isDark }: ChatWidgetProps) {
   const c = colors(isDark);
+  const isMobile = useIsMobile();
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -109,15 +111,17 @@ export function ChatWidget({ isDark }: ChatWidgetProps) {
 
   return (
     <>
-      {/* Bubble pojok kanan bawah — selalu muncul di semua halaman */}
+      {/* Bubble — kanan bawah di desktop, kiri bawah di atas bottom nav saat mobile
+          (supaya tidak menutupi tombol "Profil" yang ada di ujung kanan bottom nav) */}
       <button
         onClick={() => setIsOpen(prev => !prev)}
         style={{
           position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          width: '56px',
-          height: '56px',
+          bottom: isMobile ? '76px' : '20px',
+          right: isMobile ? 'auto' : '16px',
+          left: isMobile ? '16px' : 'auto',
+          width: '52px',
+          height: '52px',
           borderRadius: '50%',
           background: '#0EA5E9',
           border: 'none',
@@ -131,7 +135,7 @@ export function ChatWidget({ isDark }: ChatWidgetProps) {
         }}
         aria-label={isOpen ? 'Tutup StudyBot' : 'Buka StudyBot'}
       >
-        {isOpen ? <X size={24} /> : <Bot size={26} />}
+        {isOpen ? <X size={22} /> : <Bot size={24} />}
       </button>
 
       {/* Panel chat */}
@@ -139,11 +143,12 @@ export function ChatWidget({ isDark }: ChatWidgetProps) {
         <div
           style={{
             position: 'fixed',
-            bottom: '92px',
-            right: '24px',
-            width: '360px',
-            height: '500px',
-            maxHeight: 'calc(100vh - 120px)',
+            bottom: isMobile ? '136px' : '92px',
+            right: isMobile ? '16px' : '16px',
+            left: isMobile ? '16px' : 'auto',
+            width: isMobile ? 'auto' : 'min(360px, calc(100vw - 32px))',
+            height: isMobile ? 'auto' : '500px',
+            maxHeight: isMobile ? 'calc(100vh - 220px)' : 'calc(100vh - 120px)',
             background: c.card,
             border: `1px solid ${c.cardBorder}`,
             borderRadius: '16px',

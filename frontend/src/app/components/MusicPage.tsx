@@ -383,11 +383,21 @@ export function MusicPage({ isDark }: MusicPageProps) {
   // RENDER
   // ============================================================
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px', fontFamily: 'Outfit, sans-serif', position: 'relative' }}>
+    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 16px', fontFamily: 'Outfit, sans-serif', position: 'relative' }}>
+      <style>{`
+        .music-layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+        .music-playlist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        @media (max-width: 900px) {
+          .music-layout { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 480px) {
+          .music-playlist-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
 
       {/* ======================== TOAST NOTIFIKASI ======================== */}
       {/* Muncul di pojok kanan bawah layar, stack ke atas kalau lebih dari 1 */}
-      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 999, display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+      <div style={{ position: 'fixed', bottom: '20px', right: '16px', zIndex: 999, display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
         {toasts.map(toast => (
           <div
             key={toast.id}
@@ -436,7 +446,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
       {/* ======================== MODAL BUAT PLAYLIST BARU ======================== */}
       {showCreateModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: c.card, borderRadius: '12px', padding: '24px', width: '360px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: c.card, borderRadius: '12px', padding: '24px', width: 'min(360px, 95vw)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: '15px', color: c.text }}>Buat Playlist Baru</span>
               <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: c.muted }}><X size={18} /></button>
@@ -470,7 +480,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
         <p style={{ color: c.muted, fontSize: '13px', margin: 0 }}>Putar musik favoritmu untuk fokus belajar lebih baik</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px', alignItems: 'start' }}>
+      <div className="music-layout">
 
         {/* ======================== KOLOM KIRI: PLAYER + DAFTAR LAGU + ANTRIAN ======================== */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -623,7 +633,7 @@ export function MusicPage({ isDark }: MusicPageProps) {
                 {myPlaylists.length === 0 ? (
                   <div style={{ textAlign: 'center', color: c.muted, fontSize: '13px', padding: '32px 0' }}>Belum ada playlist. Buat yang pertama!</div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: activePlaylist ? '16px' : 0 }}>
+                  <div className="music-playlist-grid" style={{ marginBottom: activePlaylist ? '16px' : 0 }}>
                     {myPlaylists.map(pl => (
                       <div key={pl.id_playlist} style={{ background: isDark ? '#27272A' : '#F8FAFC', borderRadius: '8px', padding: '12px', border: `0.5px solid ${activePlaylist?.id_playlist === pl.id_playlist ? '#0EA5E9' : c.cardBorder}` }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>

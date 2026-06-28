@@ -5,9 +5,10 @@ exports.createTask = async (req, res) => {
         // Ambil ID User dari token JWT (Middleware)
         const id_pembuat = req.user.id_user; 
         const { judul, deskripsi, mata_kuliah, due_date } = req.body;
+        const file_lampiran = req.file ? req.file.filename : null;
         
-        const query = 'INSERT INTO tasks (id_pembuat, judul, deskripsi, mata_kuliah, due_date, status) VALUES (?, ?, ?, ?, ?, ?)';
-        const [result] = await db.query(query, [id_pembuat, judul, deskripsi, mata_kuliah, due_date, 'Belum']);
+        const query = 'INSERT INTO tasks (id_pembuat, judul, deskripsi, mata_kuliah, due_date, status, file_lampiran) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const [result] = await db.query(query, [id_pembuat, judul, deskripsi, mata_kuliah, due_date, 'Belum', file_lampiran]);
         
         res.status(201).json({ success: true, message: 'Tugas berhasil dibuat', taskId: result.insertId });
     } catch (error) {

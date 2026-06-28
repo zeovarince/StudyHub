@@ -396,10 +396,16 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
   );
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px', fontFamily: 'Outfit, sans-serif', position: 'relative' }}>
+    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 16px', fontFamily: 'Outfit, sans-serif', position: 'relative' }}>
+      <style>{`
+        .friends-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+        @media (max-width: 900px) {
+          .friends-layout { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
 
       {/* ======================== TOAST ======================== */}
-      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 999, display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+      <div style={{ position: 'fixed', bottom: '20px', right: '16px', zIndex: 999, display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
         {toasts.map(toast => (
           <div key={toast.id} style={{ background: toast.type === 'success' ? '#16A34A' : '#DC2626', color: '#fff', padding: '10px 16px', borderRadius: '8px', fontSize: '13px', fontFamily: 'Outfit, sans-serif', fontWeight: 500, boxShadow: '0 4px 12px rgba(0,0,0,0.2)', maxWidth: '280px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>{toast.type === 'success' ? '✓' : '✕'}</span>
@@ -411,7 +417,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
       {/* ======================== POPUP TAMBAH TEMAN ======================== */}
       {showSearchPopup && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: c.card, borderRadius: '16px', padding: '24px', width: '420px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+          <div style={{ background: c.card, borderRadius: '16px', padding: '24px', width: 'min(420px, 95vw)', maxHeight: '80vh', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
             {/* Header popup */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
@@ -493,7 +499,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
       {/* ======================== MODAL BUAT GRUP ======================== */}
       {showCreateGroup && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: c.card, borderRadius: '16px', padding: '24px', width: '380px', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+          <div style={{ background: c.card, borderRadius: '16px', padding: '24px', width: 'min(380px, 95vw)', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '16px', color: c.text }}>Buat Grup Studi</span>
               <button onClick={() => setShowCreateGroup(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: c.muted }}><X size={20} /></button>
@@ -521,10 +527,15 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
       {/* ======================== MODAL CHAT GRUP ======================== */}
       {showGroupChat && activeGroup && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: c.card, borderRadius: '16px', width: '700px', maxWidth: '95vw', height: '80vh', display: 'flex', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+          <div style={{ background: c.card, borderRadius: '16px', width: 'min(700px, 98vw)', maxWidth: '95vw', height: '80vh', display: 'flex', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
 
             {/* Sidebar anggota */}
-            <div style={{ width: '200px', borderRight: `1px solid ${c.divider}`, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+            <div className="chat-sidebar" style={{ width: '200px', borderRight: `1px solid ${c.divider}`, display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+              <style>{`
+                @media (max-width: 480px) {
+                  .chat-sidebar { display: none !important; }
+                }
+              `}</style>
               <div style={{ padding: '16px', borderBottom: `1px solid ${c.divider}` }}>
                 <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '13px', color: c.text, marginBottom: '2px' }}>{activeGroup.nama_group}</div>
                 <div style={{ fontSize: '11px', color: c.muted }}>{groupMembers.length} anggota</div>
@@ -704,7 +715,7 @@ export function FriendsPage({ isDark }: FriendsPageProps) {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '20px', alignItems: 'start' }}>
+      <div className="friends-layout">
 
         {/* ======================== KOLOM KIRI: TEMAN ======================== */}
         <div>
