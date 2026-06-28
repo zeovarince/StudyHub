@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from './config';
 import axios from 'axios';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
@@ -44,7 +45,7 @@ export default function App() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/tasks`, {
+      const response = await axios.get(`${API_URL}/api/tasks`, {
           headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -102,7 +103,7 @@ export default function App() {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/tasks/${id}/status`, { status: newStatus }, {
+      await axios.put(`${API_URL}/api/tasks/${id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` }
       });
     } catch (error) {
@@ -115,7 +116,7 @@ export default function App() {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, status } : t));
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/tasks/${id}/status`, { status }, {
+      await axios.put(`${API_URL}/api/tasks/${id}/status`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
     } catch (error) {
@@ -127,7 +128,9 @@ export default function App() {
   const addTask = async (data: Omit<Task, 'id'>) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/tasks', {
+      console.log('URL yang dipanggil:', `${API_URL}/api/tasks`);
+      console.log('API_URL value:', API_URL);
+      await axios.post(`${API_URL}/api/tasks`, {
         judul: data.title,
         deskripsi: data.description,
         mata_kuliah: 'Umum',
@@ -146,7 +149,7 @@ export default function App() {
   const deleteTask = async (id: string) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/tasks/${id}`, {
+      await axios.delete(`${API_URL}/api/tasks/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

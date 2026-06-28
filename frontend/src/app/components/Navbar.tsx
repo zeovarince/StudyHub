@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { LogOut, User } from 'lucide-react';
 import { type Page, colors } from '../types';
-import { StudyHubLogo } from './Logo';
+import { StudyHubLogo } from './logo';
 
 interface NavbarProps {
   isDark: boolean;

@@ -15,6 +15,7 @@ const groupRoutes = require('./routes/group-routes');
 const verifyToken = require('./middlewares/auth-middleware');
 const profileRoutes = require('./routes/profile-routes');
 const chatRoutes = require('./routes/chat-routes');
+const taskRoutes = require('./routes/task-routes');
 
 const app = express();
 // Bungkus express dengan http.createServer supaya Socket.io bisa nempel di server yang sama
@@ -23,13 +24,24 @@ const server = http.createServer(app);
 // Setup Socket.io dengan CORS untuk frontend di localhost:5173
 const io = new Server(server, {
     cors: {
-        origin: ['http://localhost:5173', 'http://localhost:3000'],
+        origin: [
+            'http://localhost:5173',
+            'http://localhost:3000',
+            'https://study-hub.my.id',
+        ],
         methods: ['GET', 'POST'],
         credentials: true
     }
 });
 
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'https://study-hub.my.id',
+    ],
+    credentials: true
+}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
@@ -47,6 +59,7 @@ app.use('/api/playlists', playlistRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/tasks', taskRoutes);
 
 app.get('/', (req, res) => res.send('StudyHub API Running'));
 
