@@ -3,11 +3,19 @@
 </p>
 
 <p align="center">
+  <a href="https://study-hub.my.id" target="_blank">
+    <img src="https://img.shields.io/badge/🌐 Live Demo-study--hub.my.id-0EA5E9?style=for-the-badge" alt="Live Demo" />
+  </a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
   <img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
   <img src="https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
   <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white" alt="Socket.io" />
+  <img src="https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white" alt="Gemini AI" />
 </p>
 
 <p align="center">
@@ -48,6 +56,15 @@
 * ⏰ **Indikator Tenggat Waktu**
   Peringatan visual otomatis (merah) untuk tugas yang mendekati deadline (H-1).
 
+* 💬 **Grup Studi & Chat Real-time**
+  Buat grup studi, undang teman, dan komunikasi real-time menggunakan Socket.io.
+
+* 🤖 **AI Chatbot — StudyBot**
+  Asisten belajar berbasis **Google Gemini API** yang menjawab pertanyaan akademik secara kontekstual, termasuk membaca data tugas user sendiri.
+
+* 🖼️ **Landing Page Interaktif**
+  Halaman utama dengan efek **SplashCursor** dan **MetaBalls** untuk pengalaman visual yang unik.
+
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"></a>
 
 ## 🛠️ Teknologi & Identitas Visual
@@ -61,6 +78,37 @@
 * **Authentication:** JWT & Bcrypt
 * **File Upload:** Multer
 * **Music Search API:** yt-search
+* **Real-time Chat:** Socket.io
+* **AI Chatbot:** Google Gemini API
+
+### 📦 Library Frontend
+
+| Package | Fungsi |
+|---|---|
+| `react` + `react-dom` | Library UI utama |
+| `typescript` | Static typing |
+| `vite` | Build tool & dev server |
+| `axios` | HTTP client ke backend API |
+| `react-player` | Player audio YouTube (prop `src` di v3) |
+| `socket.io-client` | Client WebSocket untuk chat real-time |
+| `lucide-react` | Icon library |
+| `tailwindcss` | Utility-first CSS framework |
+| `sonner` | Toast notifikasi |
+
+### 📦 Library Backend
+
+| Package | Fungsi |
+|---|---|
+| `express` | Framework web server Node.js |
+| `mysql2` | Driver koneksi MySQL dengan Promise support |
+| `jsonwebtoken` | Generate & verifikasi JWT token |
+| `bcryptjs` | Hash & compare password |
+| `dotenv` | Load variabel environment dari `.env` |
+| `cors` | Izinkan cross-origin request dari frontend |
+| `multer` | Middleware upload file |
+| `socket.io` | WebSocket server untuk chat real-time |
+| `yt-search` | Pencarian video YouTube untuk fitur musik |
+| `@google/generative-ai` | Google Gemini API untuk StudyBot |
 
 ### 🎨 Tema Visual & Tipografi (Clean SaaS UI)
 
@@ -98,10 +146,13 @@ Proyek ini dikembangkan secara kolaboratif oleh tim yang terdiri dari 4 anggota:
 * Menerapkan logika tombol Toggle Tema (Light/Dark).
 * Mengintegrasikan `react-player` untuk antarmuka Study Music.
 
-### 2. Riel (Database & Search Engine API)
+### 2. Riel (Database, Backend API & Visual Effects)
 
 * Merancang struktur database MySQL dan relasi pivot `friends`.
 * Mengonfigurasi `yt-search` di Node.js untuk endpoint pencarian musik.
+* Mengembangkan backend API playlist musik (CRUD, play urutan/acak, antrian, search publik).
+* Mengintegrasikan **Google Gemini API** untuk fitur **StudyBot AI Chatbot**.
+* Membuat efek visual interaktif di Landing Page: **SplashCursor** (efek cipratan warna mengikuti kursor) dan **MetaBalls** (animasi bola cair di background hero section).
 
 ### 3. Zaki (Core Task API & Kolaborasi)
 
@@ -141,7 +192,7 @@ CREATE DATABASE studyhub;
 Clone repository dan masuk ke folder backend:
 
 ```bash
-git clone https://github.com/USERNAME_GITHUB/StudyHub.git
+git clone https://github.com/zeovarince/StudyHub.git
 cd StudyHub/backend
 ```
 
@@ -160,6 +211,8 @@ DB_PASS=
 DB_NAME=studyhub
 
 JWT_SECRET=rahasia_studyhub_aman
+
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 Jalankan server backend:
@@ -180,6 +233,12 @@ Install dependency:
 
 ```bash
 npm install
+```
+
+Buat file `.env`:
+
+```env
+VITE_API_URL=http://localhost:5000
 ```
 
 Jalankan frontend:
@@ -243,5 +302,6 @@ StudyHub dikembangkan sebagai media pembelajaran dan implementasi konsep **Full 
 Proyek ini dikembangkan untuk keperluan akademik pada **Program Studi Teknik Informatika, Universitas Trunojoyo Madura**.
 
 <p align="center">
+  Mau ikut berkontribusi? Ajukan <b>Pull Request</b> ke <a href="https://github.com/zeovarince/StudyHub">zeovarince/StudyHub</a>!<br/>
   ⭐ Jangan lupa berikan <b>Star</b> pada repository ini jika bermanfaat! ⭐
 </p>
